@@ -1,0 +1,93 @@
+# Step 1: Import necessary libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Step 2: Load the dataset
+data = pd.read_excel('/Users/somi/Downloads/SALEDATA.xlsx')
+
+# Step 3: Initial Data Exploration
+print("Dataset Overview:")
+print(data.info())
+print("\nFirst 5 rows of the dataset:")
+print(data.head())
+
+# Step 4: Handle missing values
+print("\nMissing values per column:")
+print(data.isnull().sum())
+
+# Fill missing numerical values (example: with median)
+data['QUANTITYORDERED'].fillna(data['QUANTITYORDERED'].median(), inplace=True)
+data['PRICEEACH'].fillna(data['PRICEEACH'].median(), inplace=True)
+
+# Drop rows with missing values for categorical fields
+data.dropna(subset=['CUSTOMERNAME', 'COUNTRY'], inplace=True)
+
+# Step 5: Convert data types if necessary (e.g., dates)
+data['ORDERDATE22'] = pd.to_datetime(data['ORDERDATE22'])
+
+# Step 6: Descriptive statistics
+print("\nDescriptive statistics:")
+print(data.describe())
+
+# Step 7: Data Analysis
+
+# 1. Total sales by year
+sales_by_year = data.groupby('Year')['SALES'].sum()
+print("\nTotal sales by year:")
+print(sales_by_year)
+
+# 2. Total sales by month
+sales_by_month = data.groupby('Month')['SALES'].sum()
+print("\nTotal sales by month:")
+print(sales_by_month)
+
+# 3. Sales by product line
+sales_by_productline = data.groupby('PRODUCTLINE')['SALES'].sum()
+print("\nSales by product line:")
+print(sales_by_productline)
+
+# 4. Sales by country
+sales_by_country = data.groupby('COUNTRY')['SALES'].sum()
+print("\nSales by country:")
+print(sales_by_country)
+
+# Step 8: Data Visualization
+
+# Plot total sales by year
+plt.figure(figsize=(10, 6))
+sns.barplot(x=sales_by_year.index, y=sales_by_year.values, palette='coolwarm')
+plt.title('Total Sales by Year')
+plt.xlabel('Year')
+plt.ylabel('Total Sales')
+plt.show()
+
+# Plot total sales by month
+plt.figure(figsize=(10, 6))
+sns.barplot(x=sales_by_month.index, y=sales_by_month.values, palette='viridis')
+plt.title('Total Sales by Month')
+plt.xlabel('Month')
+plt.ylabel('Total Sales')
+plt.show()
+
+# Plot sales by product line
+plt.figure(figsize=(10, 6))
+sns.barplot(x=sales_by_productline.index, y=sales_by_productline.values, palette='magma')
+plt.title('Total Sales by Product Line')
+plt.xlabel('Product Line')
+plt.ylabel('Total Sales')
+plt.xticks(rotation=45)
+plt.show()
+
+# Plot sales by country
+plt.figure(figsize=(10, 6))
+sns.barplot(x=sales_by_country.index, y=sales_by_country.values, palette='cubehelix')
+plt.title('Total Sales by Country')
+plt.xlabel('Country')
+plt.ylabel('Total Sales')
+plt.xticks(rotation=45)
+plt.show()
+
+# Step 9: Save the cleaned data for future use
+data.to_csv('cleaned_sales_data.csv', index=False)
+
